@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduAI Tutor</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050c0a;--bg2:#081210;--bg3:#0d1c18;--card:#102018;--card2:#163028;
+  --border:rgba(16,230,130,0.08);--border2:rgba(16,230,130,0.18);
+  --text:#e8f5ef;--text2:#7eb89a;--text3:#3d6b55;
+  --emerald:#10e682;--teal:#00d4aa;--amber:#f5a623;--coral:#ff6b5b;--blue:#38bdf8;--violet:#a78bfa;
+  --ge:linear-gradient(135deg,#10e682,#00d4aa);
+  --ga:linear-gradient(135deg,#f5a623,#ff6b5b);
+  --gv:linear-gradient(135deg,#a78bfa,#38bdf8);
+}
+body{font-family:'Cabinet Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Clash Display',sans-serif}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(5,12,10,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{display:flex;align-items:center;gap:1rem;height:60px;max-width:1200px;margin:0 auto}
+.logo{font-family:'Clash Display',sans-serif;font-size:1.3rem;font-weight:700;background:var(--ge);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;white-space:nowrap}
+.nav-links{display:flex;gap:0.25rem;flex:1;overflow:hidden}
+.nav-link{background:none;border:none;color:var(--text2);font-family:'Cabinet Grotesk',sans-serif;font-size:0.82rem;padding:0.4rem 0.7rem;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.nav-link:hover,.nav-link.active{color:var(--text);background:var(--card2)}
+.nav-right{display:flex;gap:0.5rem;align-items:center;margin-left:auto}
+.btn{border:none;border-radius:10px;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;font-weight:500;transition:all .2s;display:inline-flex;align-items:center;gap:0.4rem}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:0.4rem 1rem;font-size:0.82rem}
+.btn-ghost:hover{border-color:var(--emerald);color:var(--text)}
+.btn-primary{background:var(--ge);color:#050c0a;padding:0.45rem 1.1rem;font-size:0.82rem;font-weight:700;box-shadow:0 4px 20px rgba(16,230,130,0.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(16,230,130,0.4)}
+.btn-lg{padding:0.75rem 1.75rem;font-size:1rem;border-radius:14px}
+
+.page{display:none;min-height:calc(100vh - 60px)}
+.page.active{display:block}
+
+/* LANDING */
+.hero{min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 2rem;position:relative;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;opacity:0.6}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(16,230,130,0.15),transparent 70%);top:-100px;left:-100px;animation:orbFloat 8s ease-in-out infinite}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(0,212,170,0.12),transparent 70%);bottom:-100px;right:-100px;animation:orbFloat 10s ease-in-out infinite reverse}
+.orb3{width:350px;height:350px;background:radial-gradient(circle,rgba(245,166,35,0.1),transparent 70%);top:40%;left:25%;animation:orbFloat 12s ease-in-out infinite 2s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0)}33%{transform:translate(20px,-30px)}66%{transform:translate(-20px,20px)}}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(16,230,130,0.08);border:1px solid rgba(16,230,130,0.2);border-radius:100px;padding:0.4rem 1rem;font-size:0.82rem;color:var(--emerald);margin-bottom:1.5rem;animation:fadeUp .6s ease both}
+.hero-badge .pulse{width:6px;height:6px;border-radius:50%;background:var(--emerald);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.4)}}
+.hero h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em;margin-bottom:1.25rem;animation:fadeUp .6s .1s ease both}
+.hero h1 .ge{background:var(--ge);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero h1 .ga{background:var(--ga);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.1rem;color:var(--text2);max-width:560px;line-height:1.7;margin-bottom:2.5rem;animation:fadeUp .6s .2s ease both}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fadeUp .6s .3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.stats-bar{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;padding:2.5rem;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stat-item{text-align:center}
+.stat-num{font-family:'Clash Display',sans-serif;font-size:2rem;font-weight:700;background:var(--ge);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:0.82rem;color:var(--text3);margin-top:0.25rem}
+
+.features{max-width:1200px;margin:0 auto;padding:5rem 2rem}
+.section-title{text-align:center;margin-bottom:3rem}
+.section-title h2{font-size:2.5rem;font-weight:700;margin-bottom:0.75rem}
+.section-title p{color:var(--text2);font-size:1rem}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.75rem;transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
+.feat-card:hover{border-color:rgba(16,230,130,0.25);transform:translateY(-4px);background:var(--card2)}
+.feat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem}
+.feat-card h3{font-size:1rem;font-weight:600;margin-bottom:0.5rem}
+.feat-card p{font-size:0.87rem;color:var(--text2);line-height:1.6}
+
+.testimonials{background:var(--bg2);padding:5rem 2rem;border-top:1px solid var(--border)}
+.testimonials-inner{max-width:1200px;margin:0 auto}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:3rem}
+.testi-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.75rem}
+.testi-stars{color:var(--amber);font-size:0.9rem;margin-bottom:0.75rem}
+.testi-text{font-size:0.9rem;color:var(--text2);line-height:1.7;margin-bottom:1.25rem;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:0.75rem}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;font-family:'Clash Display',sans-serif}
+.testi-name{font-size:0.9rem;font-weight:600}
+.testi-role{font-size:0.78rem;color:var(--text3)}
+
+/* AUTH */
+.auth-page{min-height:calc(100vh - 60px);display:flex;align-items:center;justify-content:center;padding:3rem 1rem;background:radial-gradient(ellipse at top,rgba(16,230,130,0.06),transparent 60%)}
+.auth-card{background:var(--card);border:1px solid var(--border2);border-radius:24px;padding:2.5rem;width:100%;max-width:460px}
+.auth-card h2{font-size:1.75rem;font-weight:700;margin-bottom:0.4rem}
+.auth-card .sub{color:var(--text2);font-size:0.88rem;margin-bottom:2rem}
+.form-group{margin-bottom:1.2rem}
+.form-group label{display:block;font-size:0.8rem;color:var(--text2);margin-bottom:0.4rem;font-weight:500}
+.form-group input,.form-group select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;color:var(--text);font-family:'Cabinet Grotesk',sans-serif;font-size:0.9rem;outline:none;transition:.2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--emerald)}
+.form-group select option{background:var(--card)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.auth-card .btn-primary{width:100%;justify-content:center;padding:0.8rem;font-size:0.95rem;border-radius:12px;margin-top:0.5rem}
+.auth-tabs{display:flex;gap:0.5rem;margin-bottom:2rem;background:var(--bg3);border-radius:10px;padding:4px}
+.auth-tab{flex:1;padding:0.5rem;border:none;background:none;color:var(--text2);border-radius:8px;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;font-size:0.88rem;transition:.2s}
+.auth-tab.active{background:var(--card2);color:var(--emerald)}
+
+/* DASHBOARD */
+.dash-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px)}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column;gap:0.2rem}
+.sidebar-section{font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;padding:0.5rem 0.75rem;margin-top:0.75rem}
+.side-link{display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:10px;cursor:pointer;font-size:0.87rem;color:var(--text2);transition:.2s;border:none;background:none;width:100%;text-align:left}
+.side-link:hover{background:var(--card);color:var(--text)}
+.side-link.active{background:rgba(16,230,130,0.1);color:var(--emerald);border:1px solid rgba(16,230,130,0.2)}
+.side-icon{font-size:1rem;width:20px;text-align:center}
+.main-content{padding:2rem;overflow-y:auto}
+.dash-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem}
+.welcome-text h2{font-size:1.6rem;font-weight:700}
+.welcome-text p{color:var(--text2);font-size:0.88rem;margin-top:0.25rem}
+.dash-widgets{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.widget{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem;transition:.2s}
+.widget:hover{border-color:var(--border2)}
+.widget-label{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:0.6rem}
+.widget-value{font-family:'Clash Display',sans-serif;font-size:1.75rem;font-weight:700;margin-bottom:0.25rem}
+.widget-sub{font-size:0.76rem;color:var(--text2)}
+.w-em .widget-value{background:var(--ge);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.w-am .widget-value{background:var(--ga);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.w-vi .widget-value{background:var(--gv);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.w-te .widget-value{color:var(--teal)}
+.progress-bar{height:5px;background:var(--bg3);border-radius:100px;overflow:hidden;margin-top:0.5rem}
+.progress-fill{height:100%;border-radius:100px;background:var(--ge);transition:width .6s ease}
+.dash-grid2{display:grid;grid-template-columns:1fr 1.5fr;gap:1.5rem;margin-bottom:2rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+.card h3{font-size:0.95rem;font-weight:600;margin-bottom:1.25rem}
+.subject-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.9rem}
+.subj-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.82rem;flex-shrink:0}
+.subj-name{font-size:0.83rem;flex:1;font-weight:500}
+.subj-score{font-size:0.83rem;font-weight:600}
+.mini-bar{flex:1;height:4px;background:var(--bg3);border-radius:100px;overflow:hidden}
+.mini-fill{height:100%;border-radius:100px}
+.chart-area{height:160px;display:flex;align-items:flex-end;gap:6px;padding:0 0.25rem}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center}
+.chart-bar{width:100%;border-radius:5px 5px 0 0;transition:height .5s ease}
+.chart-bar:hover{filter:brightness(1.25)}
+.ai-rec{background:rgba(16,230,130,0.05);border:1px solid rgba(16,230,130,0.12);border-radius:12px;padding:0.9rem;margin-bottom:0.9rem;display:flex;gap:0.75rem;align-items:flex-start}
+.ai-rec-icon{width:28px;height:28px;border-radius:8px;background:var(--ge);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;color:#050c0a}
+.ai-rec-text{font-size:0.81rem;color:var(--text2);line-height:1.5}
+.tasks-list{display:flex;flex-direction:column;gap:0.5rem}
+.task-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem;background:var(--bg3);border-radius:9px}
+.task-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;transition:.2s}
+.task-check.done{background:var(--emerald);border-color:var(--emerald);color:#050c0a}
+.task-name{font-size:0.82rem;flex:1}
+.task-tag{font-size:0.68rem;padding:2px 8px;border-radius:100px;font-weight:600}
+.dot-active{width:7px;height:7px;border-radius:50%;background:var(--emerald);display:inline-block;animation:pulse 2s infinite}
+
+/* AI CHAT */
+.chat-layout{display:grid;grid-template-columns:220px 1fr 230px;height:calc(100vh - 60px)}
+.chat-sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:1rem;display:flex;flex-direction:column;gap:0.4rem;overflow-y:auto}
+.chat-sidebar h3{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:0.5rem 0;margin-top:0.5rem}
+.subject-btn{display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.75rem;border-radius:9px;cursor:pointer;font-size:0.82rem;color:var(--text2);transition:.2s;border:none;background:none;width:100%;text-align:left}
+.subject-btn:hover,.subject-btn.active{background:var(--card2);color:var(--emerald)}
+.chat-main{display:flex;flex-direction:column;background:var(--bg)}
+.chat-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+.ai-avatar{width:38px;height:38px;border-radius:12px;background:var(--ge);display:flex;align-items:center;justify-content:center;font-size:1rem;color:#050c0a}
+.chat-header-info h3{font-size:0.93rem;font-weight:600}
+.chat-header-info p{font-size:0.76rem;color:var(--emerald)}
+.messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem}
+.msg{display:flex;gap:0.75rem;max-width:75%;animation:fadeUp .2s ease}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-bubble{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:0.85rem 1.1rem;font-size:0.87rem;line-height:1.65}
+.msg.user .msg-bubble{background:rgba(16,230,130,0.12);border-color:rgba(16,230,130,0.25);color:var(--text)}
+.msg-avatar{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;align-self:flex-start}
+.typing-dots{display:flex;gap:4px;padding:0.4rem 0;align-items:center}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);animation:typingDot 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingDot{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+.chat-input-area{padding:1rem 1.5rem;border-top:1px solid var(--border)}
+.chat-input-wrap{display:flex;align-items:flex-end;gap:0.5rem;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:0.6rem 0.75rem}
+.chat-input-wrap textarea{flex:1;background:none;border:none;color:var(--text);font-family:'Cabinet Grotesk',sans-serif;font-size:0.9rem;resize:none;outline:none;max-height:120px;line-height:1.5}
+.icon-btn{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:6px;font-size:1rem;transition:.2s}
+.icon-btn:hover{color:var(--emerald);background:rgba(16,230,130,0.08)}
+.send-btn{background:var(--ge);border:none;color:#050c0a;width:32px;height:32px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;transition:.2s;flex-shrink:0}
+.send-btn:hover{transform:scale(1.08)}
+.chat-right{background:var(--bg2);border-left:1px solid var(--border);padding:1rem;overflow-y:auto}
+.chat-right h3{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:0.75rem}
+.quick-action{padding:0.5rem 0.75rem;background:var(--card);border:1px solid var(--border);border-radius:9px;font-size:0.79rem;cursor:pointer;margin-bottom:0.35rem;transition:.2s;color:var(--text2);display:block;width:100%;text-align:left}
+.quick-action:hover{border-color:rgba(16,230,130,0.3);color:var(--emerald)}
+
+/* PLANNER */
+.planner-page,.analytics-page,.revision-page,.syllabus-page{padding:2rem;max-width:1100px;margin:0 auto}
+.page-header{margin-bottom:2rem}
+.page-header h2{font-size:1.9rem;font-weight:700;margin-bottom:0.4rem}
+.page-header p{color:var(--text2);font-size:0.88rem}
+.planner-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:1.5rem}
+.calendar{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.cal-header h3{font-size:0.95rem;font-weight:600}
+.cal-nav button{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);width:28px;height:28px;cursor:pointer;font-size:0.78rem;transition:.2s;margin-left:4px}
+.cal-nav button:hover{border-color:var(--emerald);color:var(--emerald)}
+.cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cal-day-name{font-size:0.68rem;color:var(--text3);text-align:center;padding:4px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:0.78rem;cursor:pointer;transition:.2s;position:relative}
+.cal-cell:hover{background:var(--card2)}
+.cal-cell.today{background:var(--ge);color:#050c0a;font-weight:700}
+.cal-cell.has-event::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--amber)}
+.cal-cell.other-month{color:var(--text3)}
+.timeline-item{display:flex;gap:1rem;align-items:flex-start;margin-bottom:0.75rem}
+.timeline-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.timeline-content{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.8rem}
+.timeline-content h4{font-size:0.85rem;font-weight:600;margin-bottom:0.15rem}
+.timeline-content p{font-size:0.77rem;color:var(--text2)}
+.timeline-time{font-size:0.7rem;color:var(--text3);white-space:nowrap;padding-top:3px}
+
+/* ANALYTICS */
+.analytics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.analytics-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem}
+.analytics-card .alabel{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:0.5rem}
+.analytics-card .avalue{font-family:'Clash Display',sans-serif;font-size:1.9rem;font-weight:700}
+.analytics-card .adelta{font-size:0.73rem;margin-top:0.25rem}
+.heat-grid{display:grid;grid-template-columns:repeat(52,1fr);gap:2px;margin-top:0.5rem}
+.heat-cell{aspect-ratio:1;border-radius:2px}
+.heat-0{background:var(--bg3)}
+.heat-1{background:rgba(16,230,130,0.18)}
+.heat-2{background:rgba(16,230,130,0.38)}
+.heat-3{background:rgba(16,230,130,0.62)}
+.heat-4{background:var(--emerald)}
+
+/* REVISION */
+.flash-card{perspective:600px;cursor:pointer;height:190px;margin-bottom:1.5rem}
+.flash-inner{width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;position:relative}
+.flash-inner.flipped{transform:rotateY(180deg)}
+.flash-front,.flash-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:16px;display:flex;align-items:center;justify-content:center;padding:1.5rem;text-align:center;border:1px solid var(--border)}
+.flash-front{background:rgba(16,230,130,0.06);border-color:rgba(16,230,130,0.2)}
+.flash-back{background:rgba(0,212,170,0.06);border-color:rgba(0,212,170,0.2);transform:rotateY(180deg)}
+.flash-front p,.flash-back p{font-size:0.93rem;line-height:1.6}
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:0.75rem;margin-top:1rem}
+.badge-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.75rem;text-align:center;transition:.2s}
+.badge-item:hover{border-color:rgba(16,230,130,0.25)}
+.badge-emoji{font-size:1.6rem;margin-bottom:0.25rem}
+.badge-name{font-size:0.7rem;color:var(--text2)}
+.xp-bar{height:7px;background:var(--bg3);border-radius:100px;overflow:hidden;margin-top:0.5rem}
+.xp-fill{height:100%;border-radius:100px;background:var(--ga)}
+
+/* SETTINGS */
+.settings-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px)}
+.settings-nav{background:var(--bg2);border-right:1px solid var(--border);padding:1.5rem 1rem}
+.settings-nav h3{font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:0.75rem}
+.settings-link{display:block;padding:0.55rem 0.75rem;border-radius:9px;font-size:0.87rem;color:var(--text2);cursor:pointer;margin-bottom:0.2rem;border:none;background:none;width:100%;text-align:left;transition:.2s}
+.settings-link:hover{background:var(--card);color:var(--text)}
+.settings-link.active{background:rgba(16,230,130,0.1);color:var(--emerald)}
+.settings-content{padding:2rem}
+.settings-content h2{font-size:1.5rem;font-weight:700;margin-bottom:0.25rem}
+.settings-content .subdesc{color:var(--text2);font-size:0.87rem;margin-bottom:2rem}
+.settings-section{margin-bottom:2rem}
+.settings-section h3{font-size:0.82rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border-bottom:none}
+.setting-info h4{font-size:0.88rem;font-weight:600;margin-bottom:0.15rem}
+.setting-info p{font-size:0.76rem;color:var(--text3)}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--bg3);border-radius:100px;transition:.3s;border:1px solid var(--border)}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:2px;top:2px;background:var(--text3);border-radius:50%;transition:.3s}
+.toggle input:checked ~ .toggle-slider{background:rgba(16,230,130,0.3);border-color:var(--emerald)}
+.toggle input:checked ~ .toggle-slider::before{transform:translateX(20px);background:var(--emerald)}
+.profile-pic{width:72px;height:72px;border-radius:50%;background:var(--ge);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-family:'Clash Display',sans-serif;font-weight:700;color:#050c0a;margin-bottom:1rem;cursor:pointer}
+
+/* NOTIFICATIONS */
+.notif-badge{position:relative}
+.notif-count{position:absolute;top:-4px;right:-4px;background:var(--coral);color:#fff;border-radius:100px;font-size:0.6rem;font-weight:700;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.notif-panel{position:fixed;top:66px;right:1rem;width:340px;background:var(--card);border:1px solid var(--border2);border-radius:16px;z-index:200;display:none;box-shadow:0 20px 60px rgba(0,0,0,0.6);max-height:480px;overflow-y:auto}
+.notif-panel.open{display:block;animation:fadeUp .2s ease}
+.notif-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-weight:600;font-size:0.93rem;display:flex;align-items:center;justify-content:space-between}
+.notif-item{padding:0.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:0.75rem;align-items:flex-start;cursor:pointer;transition:.15s}
+.notif-item:hover{background:var(--bg3)}
+.notif-item.unread{background:rgba(16,230,130,0.03)}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0;margin-top:5px}
+.notif-item-title{font-size:0.83rem;font-weight:600;margin-bottom:0.15rem}
+.notif-item-desc{font-size:0.76rem;color:var(--text2)}
+.notif-time{font-size:0.68rem;color:var(--text3);margin-top:0.2rem}
+
+/* COMMUNITY */
+.community-page{padding:2rem;max-width:1100px;margin:0 auto}
+.community-grid{display:grid;grid-template-columns:1fr 310px;gap:1.5rem}
+.post-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem;transition:.2s}
+.post-card:hover{border-color:rgba(16,230,130,0.2)}
+.post-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.85rem}
+.post-body{font-size:0.87rem;line-height:1.6;color:var(--text2);margin-bottom:0.85rem}
+.post-tags{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.85rem}
+.tag{padding:3px 10px;background:rgba(16,230,130,0.08);border:1px solid rgba(16,230,130,0.18);border-radius:100px;font-size:0.7rem;color:var(--emerald)}
+.post-actions{display:flex;gap:1rem}
+.post-action-btn{background:none;border:none;color:var(--text3);font-size:0.79rem;cursor:pointer;display:flex;align-items:center;gap:0.3rem;transition:.2s;padding:4px 8px;border-radius:6px}
+.post-action-btn:hover{color:var(--emerald);background:rgba(16,230,130,0.07)}
+.leaderboard-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid var(--border)}
+.rank-num{font-family:'Clash Display',sans-serif;font-size:0.88rem;font-weight:700;width:24px;color:var(--text3)}
+.rank-num.top{color:var(--amber)}
+
+/* MISC */
+.chip{display:inline-flex;align-items:center;gap:0.3rem;padding:4px 12px;border-radius:100px;font-size:0.73rem;font-weight:500;border:1px solid}
+hr.divider{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:100px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo" onclick="showPage('landing')">◈ EduAI</div>
+    <div class="nav-links" id="navLinks" style="display:none">
+      <button class="nav-link" onclick="showDashSection('home')">🏠 Dashboard</button>
+      <button class="nav-link" onclick="showPage('chat')">🤖 AI Tutor</button>
+      <button class="nav-link" onclick="showPage('planner')">📅 Planner</button>
+      <button class="nav-link" onclick="showPage('syllabus')">📚 Syllabus</button>
+      <button class="nav-link" onclick="showPage('revision')">🔄 Revision</button>
+      <button class="nav-link" onclick="showPage('analytics')">📊 Analytics</button>
+      <button class="nav-link" onclick="showPage('community')">👥 Community</button>
+    </div>
+    <div class="nav-right">
+      <div class="notif-badge" id="notifBadge" style="display:none">
+        <button class="icon-btn" onclick="toggleNotif()" style="font-size:1.1rem">🔔</button>
+        <span class="notif-count" id="notifCount">3</span>
+      </div>
+      <button class="btn btn-ghost" id="btnLogin" onclick="showPage('auth')">Log In</button>
+      <button class="btn btn-primary" id="btnSignup" onclick="showPage('auth')">Get Started →</button>
+      <button class="btn btn-ghost" id="btnLogout" style="display:none" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- NOTIFICATIONS -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header">Notifications <button class="icon-btn" onclick="toggleNotif()">✕</button></div>
+  <div class="notif-item unread"><div class="notif-dot"></div><div><div class="notif-item-title">🎯 Daily Goal Achieved!</div><div class="notif-item-desc">You completed your 2-hour study goal for today</div><div class="notif-time">2 mins ago</div></div></div>
+  <div class="notif-item unread"><div class="notif-dot"></div><div><div class="notif-item-title">📐 Physics Quiz Due Tomorrow</div><div class="notif-item-desc">Don't forget to complete Chapter 5 quiz</div><div class="notif-time">1 hour ago</div></div></div>
+  <div class="notif-item unread"><div class="notif-dot"></div><div><div class="notif-item-title">🔥 7-Day Streak! Keep it up!</div><div class="notif-item-desc">You've studied 7 days in a row. Amazing!</div><div class="notif-time">3 hours ago</div></div></div>
+  <div class="notif-item"><div style="width:8px"></div><div><div class="notif-item-title">📊 Weekly Report Ready</div><div class="notif-item-desc">Your study analytics for this week are available</div><div class="notif-time">Yesterday</div></div></div>
+</div>
+
+<!-- LANDING -->
+<div id="page-landing" class="page active">
+  <div class="hero">
+    <div class="hero-orb orb1"></div><div class="hero-orb orb2"></div><div class="hero-orb orb3"></div>
+    <div class="hero-badge"><span class="pulse"></span> Powered by Advanced AI · Trusted by 50,000+ Students</div>
+    <h1>Your Personal <span class="ge">AI Study</span><br>Companion — <span class="ga">24/7</span></h1>
+    <p>Master any subject with adaptive AI tutoring, smart study plans, personalised flashcards, and real-time performance analytics — all in one beautiful platform.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary btn-lg" onclick="showPage('auth')">Get Started Free →</button>
+      <button class="btn btn-ghost btn-lg" onclick="demoLogin()">✨ Try Demo</button>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">50K+</div><div class="stat-label">Active Students</div></div>
+    <div class="stat-item"><div class="stat-num">1M+</div><div class="stat-label">Problems Solved</div></div>
+    <div class="stat-item"><div class="stat-num">98%</div><div class="stat-label">Satisfaction Rate</div></div>
+    <div class="stat-item"><div class="stat-num">24/7</div><div class="stat-label">AI Availability</div></div>
+    <div class="stat-item"><div class="stat-num">8+</div><div class="stat-label">Subjects Covered</div></div>
+  </div>
+  <div class="features">
+    <div class="section-title">
+      <h2>Everything You Need to <span style="background:var(--ge);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Excel</span></h2>
+      <p>A complete AI-powered study ecosystem built for modern students</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card" onclick="showPage('chat')"><div class="feat-icon" style="background:rgba(16,230,130,0.1)">🤖</div><h3>AI Tutor Chat</h3><p>Ask anything, anytime. Get step-by-step explanations, concept breakdowns, and instant homework help across 8 subjects.</p></div>
+      <div class="feat-card" onclick="showPage('planner')"><div class="feat-icon" style="background:rgba(0,212,170,0.1)">📅</div><h3>Smart Study Planner</h3><p>AI generates personalised timetables based on your exam dates, syllabus, and available hours. Adapts to your progress.</p></div>
+      <div class="feat-card" onclick="showPage('revision')"><div class="feat-icon" style="background:rgba(245,166,35,0.1)">🔄</div><h3>Spaced Repetition</h3><p>Science-backed revision system with AI flashcards, quizzes, and adaptive scheduling to maximise long-term retention.</p></div>
+      <div class="feat-card" onclick="showPage('analytics')"><div class="feat-icon" style="background:rgba(255,107,91,0.1)">📊</div><h3>Deep Analytics</h3><p>Track your performance with heat maps, progress charts, weak topic detection, and exam readiness scores.</p></div>
+      <div class="feat-card" onclick="showPage('syllabus')"><div class="feat-icon" style="background:rgba(167,139,250,0.1)">📚</div><h3>Syllabus Tracker</h3><p>Map your entire syllabus, track chapter completion, and get AI difficulty ratings with smart study recommendations.</p></div>
+      <div class="feat-card" onclick="showPage('community')"><div class="feat-icon" style="background:rgba(56,189,248,0.1)">👥</div><h3>Study Community</h3><p>Connect with peers, join study rooms, ask questions, climb leaderboards, and learn together in a supportive space.</p></div>
+    </div>
+  </div>
+  <div class="testimonials">
+    <div class="testimonials-inner">
+      <div class="section-title"><h2>Students <span style="background:var(--ga);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Love</span> EduAI</h2><p>Real stories from real students who transformed their learning</p></div>
+      <div class="testi-grid">
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"EduAI completely changed how I study. The AI tutor explains complex physics better than my textbook ever did!"</p><div class="testi-author"><div class="avatar" style="background:var(--ge);color:#050c0a">PS</div><div><div class="testi-name">Priya Sharma</div><div class="testi-role">Class 12 · JEE Aspirant</div></div></div></div>
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"The smart planner created a perfect study schedule for my board exams. My marks went from 72% to 91%!"</p><div class="testi-author"><div class="avatar" style="background:rgba(0,212,170,0.2);color:var(--teal)">RK</div><div><div class="testi-name">Rahul Kumar</div><div class="testi-role">Class 11 · NEET Aspirant</div></div></div></div>
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"The flashcard system is incredible. I retained 3x more information for my history exams. Game changer!"</p><div class="testi-author"><div class="avatar" style="background:rgba(245,166,35,0.2);color:var(--amber)">AN</div><div><div class="testi-name">Ananya Nair</div><div class="testi-role">Class 10 · Board Exams</div></div></div></div>
+      </div>
+    </div>
+  </div>
+  <footer style="background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2rem">
+    <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem">
+      <div><div class="logo" style="margin-bottom:0.75rem">◈ EduAI Tutor</div><p style="font-size:0.83rem;color:var(--text3);line-height:1.7;max-width:280px">Your intelligent study companion available 24/7. Powered by cutting-edge AI to help every student reach their full potential.</p></div>
+      <div><h4 style="font-size:0.8rem;color:var(--text2);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:.07em">Product</h4><div style="display:flex;flex-direction:column;gap:0.4rem"><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">AI Tutor</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Study Planner</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Analytics</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Community</a></div></div>
+      <div><h4 style="font-size:0.8rem;color:var(--text2);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:.07em">Subjects</h4><div style="display:flex;flex-direction:column;gap:0.4rem"><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Mathematics</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Physics</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Chemistry</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Biology</a></div></div>
+      <div><h4 style="font-size:0.8rem;color:var(--text2);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:.07em">Company</h4><div style="display:flex;flex-direction:column;gap:0.4rem"><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">About</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Blog</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Privacy</a><a style="font-size:0.83rem;color:var(--text3);cursor:pointer">Terms</a></div></div>
+    </div>
+    <div style="max-width:1200px;margin:2rem auto 0;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><p style="font-size:0.8rem;color:var(--text3)">© 2026 EduAI Tutor. All rights reserved.</p><p style="font-size:0.8rem;color:var(--text3)">Made with ❤️ for students everywhere</p></div>
+  </footer>
+</div>
+
+<!-- AUTH -->
+<div id="page-auth" class="page">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-tabs"><button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Log In</button><button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button></div>
+      <div id="authLogin"><h2>Welcome back</h2><p class="sub">Continue your learning journey</p><div class="form-group"><label>Email Address</label><input type="email" placeholder="student@email.com"></div><div class="form-group"><label>Password</label><input type="password" placeholder="••••••••"></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem"><label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--text2);cursor:pointer"><input type="checkbox" style="width:auto"> Remember me</label><a style="font-size:0.8rem;color:var(--emerald);cursor:pointer" onclick="switchAuthTab('forgot')">Forgot password?</a></div><button class="btn btn-primary" onclick="loginUser()">Log In →</button><p style="text-align:center;margin-top:1rem;font-size:0.78rem;color:var(--text3)">Demo: any email + any password</p></div>
+      <div id="authSignup" style="display:none"><h2>Create account</h2><p class="sub">Start your AI learning journey today</p><div class="form-row"><div class="form-group"><label>First Name</label><input type="text" placeholder="Priya"></div><div class="form-group"><label>Last Name</label><input type="text" placeholder="Sharma"></div></div><div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div><div class="form-row"><div class="form-group"><label>Password</label><input type="password" placeholder="••••••••"></div><div class="form-group"><label>Confirm</label><input type="password" placeholder="••••••••"></div></div><div class="form-row"><div class="form-group"><label>Grade</label><select><option>Class 9</option><option>Class 10</option><option selected>Class 11</option><option>Class 12</option></select></div><div class="form-group"><label>Stream</label><select><option>Science (PCM)</option><option>Science (PCB)</option><option>Commerce</option><option>Arts</option></select></div></div><div class="form-group"><label>Learning Goal</label><select><option>JEE Preparation</option><option>NEET Preparation</option><option>Board Exams</option><option>General Learning</option></select></div><button class="btn btn-primary" onclick="loginUser()">Create Account →</button></div>
+      <div id="authForgot" style="display:none"><h2>Reset Password</h2><p class="sub">Enter your email to receive an OTP</p><div class="form-group"><label>Email</label><input type="email" placeholder="student@email.com"></div><button class="btn btn-primary">Send OTP →</button><div style="text-align:center;margin-top:1rem"><a style="font-size:0.82rem;color:var(--emerald);cursor:pointer" onclick="switchAuthTab('login')">← Back to Login</a></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page">
+  <div class="dash-layout">
+    <div class="sidebar">
+      <button class="side-link active" id="sideHome" onclick="showDashSection('home')"><span class="side-icon">🏠</span> Dashboard</button>
+      <button class="side-link" onclick="showPage('chat')"><span class="side-icon">🤖</span> AI Tutor</button>
+      <button class="side-link" onclick="showPage('planner')"><span class="side-icon">📅</span> Planner</button>
+      <button class="side-link" onclick="showPage('syllabus')"><span class="side-icon">📚</span> Syllabus</button>
+      <button class="side-link" onclick="showPage('revision')"><span class="side-icon">🔄</span> Revision</button>
+      <button class="side-link" onclick="showPage('analytics')"><span class="side-icon">📊</span> Analytics</button>
+      <div class="sidebar-section">Social</div>
+      <button class="side-link" onclick="showPage('community')"><span class="side-icon">👥</span> Community</button>
+      <div class="sidebar-section">Account</div>
+      <button class="side-link" onclick="showPage('settings')"><span class="side-icon">⚙️</span> Settings</button>
+    </div>
+    <div class="main-content" id="dashContent"></div>
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<div id="page-chat" class="page">
+  <div class="chat-layout">
+    <div class="chat-sidebar">
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:0.5rem" onclick="newChat()">+ New Chat</button>
+      <h3>Subjects</h3>
+      <button class="subject-btn active" onclick="setSubject(this,'Mathematics')">📐 Mathematics</button>
+      <button class="subject-btn" onclick="setSubject(this,'Physics')">⚛️ Physics</button>
+      <button class="subject-btn" onclick="setSubject(this,'Chemistry')">🧪 Chemistry</button>
+      <button class="subject-btn" onclick="setSubject(this,'Biology')">🧬 Biology</button>
+      <button class="subject-btn" onclick="setSubject(this,'Computer Science')">💻 Computer Science</button>
+      <button class="subject-btn" onclick="setSubject(this,'English')">📖 English</button>
+      <button class="subject-btn" onclick="setSubject(this,'History')">🏛️ History</button>
+      <button class="subject-btn" onclick="setSubject(this,'Geography')">🌍 Geography</button>
+      <h3>Recent</h3>
+      <button class="subject-btn" style="font-size:0.78rem">Integration by Parts</button>
+      <button class="subject-btn" style="font-size:0.78rem">Newton's Laws</button>
+      <button class="subject-btn" style="font-size:0.78rem">Cell Division</button>
+    </div>
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="ai-avatar">🤖</div>
+        <div class="chat-header-info"><h3>EduAI — <span id="currentSubject">Mathematics</span></h3><p><span class="dot-active"></span> Online · Ready to help</p></div>
+        <div style="margin-left:auto;display:flex;gap:0.5rem"><button class="icon-btn" title="Voice">🎙️</button><button class="icon-btn" title="Upload">📎</button><button class="icon-btn" title="Flashcards">📇</button></div>
+      </div>
+      <div class="messages" id="chatMessages">
+        <div class="msg"><div class="msg-avatar" style="background:rgba(16,230,130,0.15)">🤖</div><div class="msg-bubble"><strong>Hello! I'm your EduAI Tutor 👋</strong><br><br>I'm here to help you master <strong>Mathematics</strong> and any other subject.<br><br>📌 Explain concepts step-by-step<br>🧮 Solve problems with full workings<br>📝 Generate notes &amp; summaries<br>📇 Create custom flashcards<br><br>What would you like to explore today?</div></div>
+      </div>
+      <div class="chat-input-area">
+        <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem;flex-wrap:wrap">
+          <button class="chip" style="background:rgba(16,230,130,0.08);border-color:rgba(16,230,130,0.2);color:var(--emerald);cursor:pointer" onclick="sendQuick('Explain integration by parts')">Explain integration by parts</button>
+          <button class="chip" style="background:rgba(0,212,170,0.08);border-color:rgba(0,212,170,0.2);color:var(--teal);cursor:pointer" onclick="sendQuick('Solve: x² + 5x + 6 = 0')">Solve a quadratic</button>
+          <button class="chip" style="background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2);color:var(--amber);cursor:pointer" onclick="sendQuick('Create flashcards for Calculus')">Make flashcards</button>
+        </div>
+        <div class="chat-input-wrap">
+          <textarea id="chatInput" placeholder="Ask me anything about Mathematics..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+          <button class="icon-btn">🎙️</button>
+          <button class="icon-btn">🖼️</button>
+          <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+    <div class="chat-right">
+      <h3>Quick Actions</h3>
+      <button class="quick-action" onclick="sendQuick('Generate study notes for this topic')">📝 Generate Notes</button>
+      <button class="quick-action" onclick="sendQuick('Create 5 flashcards on this topic')">📇 Create Flashcards</button>
+      <button class="quick-action" onclick="sendQuick('Summarize the key concepts')">📋 Summarize Topic</button>
+      <button class="quick-action" onclick="sendQuick('Give me 3 practice problems')">✏️ Practice Problems</button>
+      <button class="quick-action" onclick="sendQuick('What are the important formulas?')">🔢 Key Formulas</button>
+      <button class="quick-action" onclick="sendQuick('Explain in simple terms')">💡 Simplify</button>
+      <hr class="divider">
+      <h3>AI Insights</h3>
+      <div style="background:rgba(16,230,130,0.06);border:1px solid rgba(16,230,130,0.15);border-radius:10px;padding:0.75rem;font-size:0.77rem;color:var(--text2);line-height:1.5;margin-bottom:0.5rem">💡 <strong style="color:var(--text)">Tip:</strong> Break complex problems into smaller steps. Ask me to show each step individually.</div>
+      <div style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.15);border-radius:10px;padding:0.75rem;font-size:0.77rem;color:var(--text2);line-height:1.5">📈 You're in the top 15% of Math students this week!</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANNER -->
+<div id="page-planner" class="page">
+  <div class="planner-page">
+    <div class="page-header"><h2>📅 Smart Study Planner</h2><p>AI-generated study schedules tailored to your goals and exam dates</p></div>
+    <div class="planner-grid">
+      <div>
+        <div class="calendar">
+          <div class="cal-header"><h3>June 2026</h3><div class="cal-nav"><button>←</button><button>→</button></div></div>
+          <div class="cal-days-header"><div class="cal-day-name">S</div><div class="cal-day-name">M</div><div class="cal-day-name">T</div><div class="cal-day-name">W</div><div class="cal-day-name">T</div><div class="cal-day-name">F</div><div class="cal-day-name">S</div></div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div style="margin-top:1rem">
+          <div class="card">
+            <h3>⚡ AI Planner Setup</h3>
+            <div class="form-group"><label>Exam Date</label><input type="date" value="2026-07-15"></div>
+            <div class="form-group"><label>Daily Study Hours</label><select><option>2 hours</option><option selected>4 hours</option><option>6 hours</option></select></div>
+            <div class="form-group"><label>Priority Subject</label><select><option>Mathematics</option><option selected>Physics</option><option>Chemistry</option></select></div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center">🤖 Generate AI Plan</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1.25rem"><h3>📋 Today's Schedule — May 30</h3><div id="todayTimeline"></div></div>
+        <div class="card"><h3>📊 Weekly Goals</h3><div style="display:flex;flex-direction:column;gap:0.75rem" id="weeklyGoals"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SYLLABUS -->
+<div id="page-syllabus" class="page">
+  <div class="syllabus-page">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between"><div><h2>📚 Syllabus Manager</h2><p>Track your syllabus completion and get AI-powered study recommendations</p></div><button class="btn btn-primary">+ Add Subject</button></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem" id="syllabusGrid"></div>
+  </div>
+</div>
+
+<!-- REVISION -->
+<div id="page-revision" class="page">
+  <div class="revision-page">
+    <div class="page-header"><h2>🔄 Revision Center</h2><p>Spaced repetition, flashcards, quizzes and gamified learning</p></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      <div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <h3>⚡ Flashcard of the Day</h3>
+          <p style="font-size:0.8rem;color:var(--text3);margin-bottom:1rem">Click the card to reveal the answer</p>
+          <div class="flash-card" onclick="flipCard()"><div class="flash-inner" id="flashInner"><div class="flash-front"><div><p style="color:var(--text3);font-size:0.72rem;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:.06em">Mathematics · Calculus</p><p style="font-size:1.05rem;font-weight:600">What is the derivative of sin(x)?</p></div></div><div class="flash-back"><div><p style="color:var(--teal);font-size:0.72rem;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:.06em">Answer</p><p style="font-size:1.1rem;font-weight:700">d/dx[sin(x)] = cos(x)</p><p style="font-size:0.8rem;color:var(--text2);margin-top:0.5rem">The derivative of sine is cosine, a fundamental trig identity.</p></div></div></div></div>
+          <div style="display:flex;gap:0.75rem;justify-content:center"><button class="btn btn-ghost" style="color:var(--coral);border-color:var(--coral);min-width:80px" onclick="nextCard()">✗ Hard</button><button class="btn btn-ghost" style="color:var(--amber);border-color:var(--amber);min-width:80px" onclick="nextCard()">~ OK</button><button class="btn btn-ghost" style="color:var(--emerald);border-color:var(--emerald);min-width:80px" onclick="nextCard()">✓ Easy</button></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><h3>📝 Quick Quiz</h3><span class="chip" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.2);color:var(--blue)">Physics</span></div>
+          <div id="quizArea"><p style="font-size:0.93rem;font-weight:600;margin-bottom:1rem">What is the SI unit of force?</p><div style="display:flex;flex-direction:column;gap:0.5rem" id="quizOptions"><button style="cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;text-align:left;background:var(--bg3);color:var(--text);font-size:0.87rem;transition:.2s;font-family:'Cabinet Grotesk',sans-serif" onclick="answerQuiz(this,false)">A. Watt</button><button style="cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;text-align:left;background:var(--bg3);color:var(--text);font-size:0.87rem;transition:.2s;font-family:'Cabinet Grotesk',sans-serif" onclick="answerQuiz(this,true)">B. Newton</button><button style="cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;text-align:left;background:var(--bg3);color:var(--text);font-size:0.87rem;transition:.2s;font-family:'Cabinet Grotesk',sans-serif" onclick="answerQuiz(this,false)">C. Pascal</button><button style="cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;text-align:left;background:var(--bg3);color:var(--text);font-size:0.87rem;transition:.2s;font-family:'Cabinet Grotesk',sans-serif" onclick="answerQuiz(this,false)">D. Joule</button></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <h3>🏆 Achievements</h3>
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;background:var(--bg3);border-radius:12px;padding:0.85rem">
+            <div><div style="font-size:0.73rem;color:var(--text3)">Level 12 Scholar</div><div style="font-family:'Clash Display',sans-serif;font-size:1.4rem;font-weight:700;background:var(--ga);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">4,850 XP</div><div style="font-size:0.73rem;color:var(--text3)">150 XP to Level 13</div></div>
+            <div style="flex:1"><div class="xp-bar"><div class="xp-fill" style="width:76%"></div></div></div>
+          </div>
+          <div class="badge-grid"><div class="badge-item"><div class="badge-emoji">🔥</div><div class="badge-name">7-Day Streak</div></div><div class="badge-item"><div class="badge-emoji">🧮</div><div class="badge-name">Math Master</div></div><div class="badge-item"><div class="badge-emoji">⚡</div><div class="badge-name">Speed Solver</div></div><div class="badge-item"><div class="badge-emoji">📚</div><div class="badge-name">Bookworm</div></div><div class="badge-item"><div class="badge-emoji">🎯</div><div class="badge-name">Perfect Week</div></div><div class="badge-item" style="opacity:0.4"><div class="badge-emoji">🏆</div><div class="badge-name">Top 1% 🔒</div></div></div>
+        </div>
+        <div class="card"><h3>📅 Revision Schedule</h3><div style="display:flex;flex-direction:column;gap:0.6rem" id="revSchedule"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="page-analytics" class="page">
+  <div class="analytics-page">
+    <div class="page-header"><h2>📊 Reports & Analytics</h2><p>Deep insights into your learning journey</p></div>
+    <div class="analytics-grid">
+      <div class="analytics-card"><div class="alabel">Total Study Hours</div><div class="avalue" style="background:var(--ge);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">142h</div><div class="adelta" style="color:var(--emerald)">↑ 12% this week</div></div>
+      <div class="analytics-card"><div class="alabel">Problems Solved</div><div class="avalue" style="background:linear-gradient(135deg,var(--teal),var(--emerald));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">1,247</div><div class="adelta" style="color:var(--emerald)">↑ 8% this week</div></div>
+      <div class="analytics-card"><div class="alabel">Accuracy Rate</div><div class="avalue" style="background:var(--ga);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">84%</div><div class="adelta" style="color:var(--emerald)">↑ 3% vs last week</div></div>
+      <div class="analytics-card"><div class="alabel">Exam Readiness</div><div class="avalue" style="color:var(--amber)">73%</div><div class="adelta" style="color:var(--amber)">→ In progress</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1.5rem;margin-bottom:2rem">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><h3>📈 Weekly Study Hours</h3><div style="display:flex;gap:0.5rem"><button class="btn btn-ghost" style="font-size:0.73rem;padding:0.3rem 0.75rem">Week</button><button class="btn btn-primary" style="font-size:0.73rem;padding:0.3rem 0.75rem">Month</button></div></div>
+        <div class="chart-area" id="weekChart" style="height:180px"></div>
+        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;justify-content:center"><span style="font-size:0.68rem;color:var(--text3)">Mon</span><span style="font-size:0.68rem;color:var(--text3)">Tue</span><span style="font-size:0.68rem;color:var(--text3)">Wed</span><span style="font-size:0.68rem;color:var(--text3)">Thu</span><span style="font-size:0.68rem;color:var(--text3)">Fri</span><span style="font-size:0.68rem;color:var(--text3)">Sat</span><span style="font-size:0.68rem;color:var(--text3)">Sun</span></div>
+      </div>
+      <div class="card"><h3>🥧 Subject Distribution</h3><div id="donutChart" style="margin:0.5rem auto;text-align:center"></div><div id="donutLegend" style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.75rem"></div></div>
+    </div>
+    <div class="card"><h3>🗓️ Study Activity — Last 3 Months</h3><div class="heat-grid" id="heatMap" style="margin-top:1rem"></div><div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.75rem;justify-content:flex-end"><span style="font-size:0.7rem;color:var(--text3)">Less</span><div style="width:12px;height:12px;border-radius:2px" class="heat-0"></div><div style="width:12px;height:12px;border-radius:2px" class="heat-1"></div><div style="width:12px;height:12px;border-radius:2px" class="heat-2"></div><div style="width:12px;height:12px;border-radius:2px" class="heat-3"></div><div style="width:12px;height:12px;border-radius:2px" class="heat-4"></div><span style="font-size:0.7rem;color:var(--text3)">More</span></div></div>
+  </div>
+</div>
+
+<!-- COMMUNITY -->
+<div id="page-community" class="page">
+  <div class="community-page">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem"><div><h2>👥 Study Community</h2><p>Connect, share, and learn together</p></div><button class="btn btn-primary">+ New Post</button></div>
+    <div class="community-grid">
+      <div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;flex-wrap:wrap"><button class="btn btn-primary" style="font-size:0.8rem;padding:0.4rem 1rem">All Topics</button><button class="btn btn-ghost" style="font-size:0.8rem;padding:0.4rem 1rem">Mathematics</button><button class="btn btn-ghost" style="font-size:0.8rem;padding:0.4rem 1rem">Physics</button><button class="btn btn-ghost" style="font-size:0.8rem;padding:0.4rem 1rem">Chemistry</button><button class="btn btn-ghost" style="font-size:0.8rem;padding:0.4rem 1rem">Study Tips</button></div>
+        <div class="post-card"><div class="post-header"><div class="avatar" style="background:rgba(16,230,130,0.12);color:var(--emerald);font-size:0.73rem;font-family:'Clash Display',sans-serif">AM</div><div><div style="font-size:0.87rem;font-weight:600">Arjun Mehta</div><div style="font-size:0.73rem;color:var(--text3)">2 hours ago · Class 12</div></div><div class="chip" style="margin-left:auto;background:rgba(16,230,130,0.07);border-color:rgba(16,230,130,0.18);color:var(--emerald)">📐 Math</div></div><div class="post-body">Can anyone explain the intuition behind integration by parts? I understand the formula ∫u dv = uv − ∫v du but I don't get when to choose which part as u and which as dv. Looking for a simple explanation! 🤔</div><div class="post-tags"><span class="tag">Integration</span><span class="tag">Calculus</span><span class="tag">JEE</span></div><div class="post-actions"><button class="post-action-btn">👍 24</button><button class="post-action-btn">💬 8 Replies</button><button class="post-action-btn">🔖 Save</button><button class="post-action-btn">🤖 Ask AI</button></div></div>
+        <div class="post-card"><div class="post-header"><div class="avatar" style="background:rgba(0,212,170,0.12);color:var(--teal);font-size:0.73rem;font-family:'Clash Display',sans-serif">SS</div><div><div style="font-size:0.87rem;font-weight:600">Sneha Singh</div><div style="font-size:0.73rem;color:var(--text3)">5 hours ago · Class 11</div></div><div class="chip" style="margin-left:auto;background:rgba(56,189,248,0.07);border-color:rgba(56,189,248,0.18);color:var(--blue)">⚛️ Physics</div></div><div class="post-body">My study strategy for JEE Physics: 1 hour new concepts, 30 mins problems, 30 mins reviewing mistakes. Using EduAI to explain concepts I don't understand. Accuracy improved from 60% to 85% in 3 weeks! 🚀</div><div class="post-tags"><span class="tag">Study Tips</span><span class="tag">JEE</span><span class="tag">Physics</span></div><div class="post-actions"><button class="post-action-btn">👍 67</button><button class="post-action-btn">💬 15 Replies</button><button class="post-action-btn">🔖 Save</button></div></div>
+        <div class="post-card"><div class="post-header"><div class="avatar" style="background:rgba(245,166,35,0.12);color:var(--amber);font-size:0.73rem;font-family:'Clash Display',sans-serif">RK</div><div><div style="font-size:0.87rem;font-weight:600">Rohit Krishnan</div><div style="font-size:0.73rem;color:var(--text3)">Yesterday · Class 10</div></div><div class="chip" style="margin-left:auto;background:rgba(245,166,35,0.07);border-color:rgba(245,166,35,0.18);color:var(--amber)">🧪 Chemistry</div></div><div class="post-body">Just got my Chapter 4 (Chemical Bonding) quiz result — 96/100! The AI tutor explained ionic vs covalent bonding so well. If anyone needs help with this topic, happy to share my notes! 🎉</div><div class="post-tags"><span class="tag">Chemistry</span><span class="tag">Bonding</span><span class="tag">Boards</span></div><div class="post-actions"><button class="post-action-btn">👍 41</button><button class="post-action-btn">💬 6 Replies</button><button class="post-action-btn">🔖 Save</button></div></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1.25rem"><h3>🏆 Leaderboard</h3><div id="leaderboard"></div></div>
+        <div class="card"><h3>🎙️ Live Study Rooms</h3><div style="display:flex;flex-direction:column;gap:0.75rem"><div style="background:var(--bg3);border-radius:10px;padding:0.85rem;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:0.83rem;font-weight:600;margin-bottom:0.2rem">📐 Math Study Room</div><div style="font-size:0.73rem;color:var(--text3)">12 students · Calculus</div></div><button class="btn btn-primary" style="font-size:0.73rem;padding:0.3rem 0.75rem">Join</button></div><div style="background:var(--bg3);border-radius:10px;padding:0.85rem;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:0.83rem;font-weight:600;margin-bottom:0.2rem">⚛️ Physics Room</div><div style="font-size:0.73rem;color:var(--text3)">7 students · Optics</div></div><button class="btn btn-primary" style="font-size:0.73rem;padding:0.3rem 0.75rem">Join</button></div><div style="background:var(--bg3);border-radius:10px;padding:0.85rem;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:0.83rem;font-weight:600;margin-bottom:0.2rem">🧪 Chemistry Room</div><div style="font-size:0.73rem;color:var(--text3)">5 students · Organic</div></div><button class="btn btn-primary" style="font-size:0.73rem;padding:0.3rem 0.75rem">Join</button></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="page-settings" class="page">
+  <div class="settings-layout">
+    <div class="settings-nav"><h3>Settings</h3><button class="settings-link active">👤 Profile</button><button class="settings-link">🎨 Appearance</button><button class="settings-link">🔔 Notifications</button><button class="settings-link">🔒 Security</button><button class="settings-link">🌍 Language</button><button class="settings-link">💳 Subscription</button><button class="settings-link" style="color:var(--coral)">🚪 Sign Out</button></div>
+    <div class="settings-content">
+      <h2>Profile Settings</h2><p class="subdesc">Manage your personal information and preferences</p>
+      <div class="profile-pic">PS</div>
+      <div style="font-size:0.82rem;color:var(--emerald);cursor:pointer;margin-bottom:1.5rem">Change profile photo</div>
+      <div class="settings-section"><h3>Personal Information</h3><div class="form-row" style="margin-bottom:1rem"><div class="form-group"><label>First Name</label><input type="text" value="Priya"></div><div class="form-group"><label>Last Name</label><input type="text" value="Sharma"></div></div><div class="form-group"><label>Email</label><input type="email" value="priya.sharma@email.com"></div><div class="form-row"><div class="form-group"><label>Class</label><select><option>Class 11</option></select></div><div class="form-group"><label>Stream</label><select><option>Science (PCM)</option></select></div></div></div>
+      <div class="settings-section"><h3>Preferences</h3>
+        <div class="setting-row"><div class="setting-info"><h4>Dark Mode</h4><p>Toggle between dark and light interface</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        <div class="setting-row"><div class="setting-info"><h4>AI Voice Responses</h4><p>Enable voice output from the AI tutor</p></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+        <div class="setting-row"><div class="setting-info"><h4>Study Reminders</h4><p>Get daily study reminder notifications</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        <div class="setting-row"><div class="setting-info"><h4>Progress Sharing</h4><p>Share your achievements with the community</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+      </div>
+      <button class="btn btn-primary">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let isLoggedIn=false,chatHistory=[],currentSubject='Mathematics',flashFlipped=false,flashIdx=0;
+const flashcards=[{q:'What is the derivative of sin(x)?',a:'d/dx[sin(x)] = cos(x)'},{q:"State Newton's Second Law",a:'F = ma — Force equals mass times acceleration'},{q:'What is the quadratic formula?',a:'x = (−b ± √(b²−4ac)) / 2a'},{q:'What is Ohm\'s Law?',a:'V = IR — Voltage equals Current times Resistance'},{q:'Define photosynthesis',a:'Plants convert CO₂ + H₂O + light → glucose + O₂'}];
+
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const target=document.getElementById('page-'+page);
+  if(!target)return;
+  const protected_=['chat','planner','syllabus','revision','analytics','community','settings'];
+  if(protected_.includes(page)&&!isLoggedIn){showPage('auth');return;}
+  target.classList.add('active');
+  const dash_pages=['dashboard','planner','syllabus','revision','analytics','community','settings'];
+  document.getElementById('navLinks').style.display=dash_pages.includes(page)?'flex':'none';
+  if(page==='dashboard')renderDashHome();
+  if(page==='planner')renderPlanner();
+  if(page==='syllabus')renderSyllabus();
+  if(page==='analytics')renderAnalytics();
+  if(page==='revision')renderRevision();
+  if(page==='community')renderLeaderboard();
+  window.scrollTo(0,0);
+}
+function showDashSection(s){if(s==='home')showPage('dashboard');}
+function demoLogin(){isLoggedIn=true;document.getElementById('btnLogin').style.display='none';document.getElementById('btnSignup').style.display='none';document.getElementById('btnLogout').style.display='flex';document.getElementById('notifBadge').style.display='flex';showPage('dashboard');}
+function loginUser(){demoLogin();}
+function logout(){isLoggedIn=false;document.getElementById('btnLogin').style.display='flex';document.getElementById('btnSignup').style.display='flex';document.getElementById('btnLogout').style.display='none';document.getElementById('notifBadge').style.display='none';showPage('landing');}
+function switchAuthTab(tab){['authLogin','authSignup','authForgot'].forEach(id=>document.getElementById(id).style.display='none');['tabLogin','tabSignup'].forEach(id=>document.getElementById(id)&&document.getElementById(id).classList.remove('active'));if(tab==='login'){document.getElementById('authLogin').style.display='block';document.getElementById('tabLogin').classList.add('active');}else if(tab==='signup'){document.getElementById('authSignup').style.display='block';document.getElementById('tabSignup').classList.add('active');}else{document.getElementById('authForgot').style.display='block';}}
+function toggleNotif(){document.getElementById('notifPanel').classList.toggle('open');}
+
+function renderDashHome(){
+  const c=document.getElementById('dashContent');
+  c.innerHTML=`<div class="dash-header"><div class="welcome-text"><h2>Good afternoon, Priya! 👋</h2><p>You have 3 tasks due today. Keep up the great work!</p></div><div style="display:flex;gap:.75rem;align-items:center"><div style="display:flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.4rem .85rem"><span>🔥</span><span style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--amber)">7</span><span style="font-size:.76rem;color:var(--text3)">day streak</span></div><button class="btn btn-primary" onclick="showPage('chat')">🤖 Ask AI Tutor</button></div></div>
+  <div class="dash-widgets">
+    <div class="widget w-em"><div class="widget-label">Daily Progress</div><div class="widget-value">68%</div><div class="widget-sub">2.7h of 4h goal</div><div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div></div>
+    <div class="widget w-am"><div class="widget-label">Problems Solved</div><div class="widget-value">24</div><div class="widget-sub">Today's count</div></div>
+    <div class="widget w-vi"><div class="widget-label">Study Streak</div><div class="widget-value">7 🔥</div><div class="widget-sub">Best: 12 days</div></div>
+    <div class="widget w-te"><div class="widget-label">Overall Rank</div><div class="widget-value">#47</div><div class="widget-sub">Top 5% this week</div></div>
+  </div>
+  <div class="dash-grid2">
+    <div class="card"><h3>🤖 AI Recommendations</h3>
+      <div class="ai-rec"><div class="ai-rec-icon">📐</div><div><strong style="font-size:.82rem">Focus on Integration</strong><div class="ai-rec-text">Your JEE exam is in 12 days. Calculus has 25% weightage — spend 1.5h today on integration techniques.</div></div></div>
+      <div class="ai-rec"><div class="ai-rec-icon">⚛️</div><div><strong style="font-size:.82rem">Revise Optics</strong><div class="ai-rec-text">You scored 62% on your last Physics test. Review refraction and lens formulas before tomorrow.</div></div></div>
+      <div class="ai-rec"><div class="ai-rec-icon">🧪</div><div><strong style="font-size:.82rem">Chemistry on Track</strong><div class="ai-rec-text">You're 78% through Organic Chemistry. Continue at this pace for exam readiness.</div></div></div>
+    </div>
+    <div class="card"><h3>📊 Subject Performance</h3>
+      <div class="subject-row"><div class="subj-icon" style="background:rgba(16,230,130,0.12)">📐</div><div class="subj-name">Mathematics</div><div class="mini-bar"><div class="mini-fill" style="width:82%;background:var(--emerald)"></div></div><div class="subj-score" style="color:var(--emerald)">82%</div></div>
+      <div class="subject-row"><div class="subj-icon" style="background:rgba(56,189,248,0.12)">⚛️</div><div class="subj-name">Physics</div><div class="mini-bar"><div class="mini-fill" style="width:68%;background:var(--blue)"></div></div><div class="subj-score" style="color:var(--blue)">68%</div></div>
+      <div class="subject-row"><div class="subj-icon" style="background:rgba(0,212,170,0.12)">🧪</div><div class="subj-name">Chemistry</div><div class="mini-bar"><div class="mini-fill" style="width:75%;background:var(--teal)"></div></div><div class="subj-score" style="color:var(--teal)">75%</div></div>
+      <div class="subject-row"><div class="subj-icon" style="background:rgba(245,166,35,0.12)">🧬</div><div class="subj-name">Biology</div><div class="mini-bar"><div class="mini-fill" style="width:88%;background:var(--amber)"></div></div><div class="subj-score" style="color:var(--amber)">88%</div></div>
+      <div class="subject-row"><div class="subj-icon" style="background:rgba(167,139,250,0.12)">💻</div><div class="subj-name">Computer Sci</div><div class="mini-bar"><div class="mini-fill" style="width:91%;background:var(--violet)"></div></div><div class="subj-score" style="color:var(--violet)">91%</div></div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+    <div class="card"><h3>📋 Today's Tasks</h3><div class="tasks-list">
+      <div class="task-item"><div class="task-check done">✓</div><div class="task-name">Chapter 7 — Integration Practice</div><span class="task-tag" style="background:rgba(16,230,130,0.1);color:var(--emerald)">Math</span></div>
+      <div class="task-item"><div class="task-check" onclick="this.classList.toggle('done')"></div><div class="task-name">Optics Quiz (Chapter 9)</div><span class="task-tag" style="background:rgba(56,189,248,0.1);color:var(--blue)">Physics</span></div>
+      <div class="task-item"><div class="task-check" onclick="this.classList.toggle('done')"></div><div class="task-name">Read Organic Chem — Ch 5</div><span class="task-tag" style="background:rgba(0,212,170,0.1);color:var(--teal)">Chem</span></div>
+      <div class="task-item"><div class="task-check" onclick="this.classList.toggle('done')"></div><div class="task-name">Revision: Cell Division Flashcards</div><span class="task-tag" style="background:rgba(245,166,35,0.1);color:var(--amber)">Bio</span></div>
+    </div></div>
+    <div class="card"><h3>📈 This Week's Study Hours</h3><div class="chart-area" id="dashChart" style="height:140px;margin-top:.5rem"></div><div style="display:flex;gap:.5rem;margin-top:.5rem;justify-content:space-between;padding:0 .25rem">${['M','T','W','T','F','S','S'].map(d=>`<span style="font-size:.65rem;color:var(--text3);flex:1;text-align:center">${d}</span>`).join('')}</div></div>
+  </div>`;
+  setTimeout(()=>renderMiniChart('dashChart',[3,4.5,2,5,3.5,4,2.7]),50);
+}
+
+function renderMiniChart(id,data){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const max=Math.max(...data);
+  const colors=['#10e682','#00d4aa','#f5a623','#10e682','#ff6b5b','#a78bfa','#38bdf8'];
+  el.innerHTML=data.map((v,i)=>{const h=Math.round((v/max)*100);return`<div class="bar-wrap" style="flex:1"><div class="chart-bar" style="height:${h}%;background:linear-gradient(180deg,${colors[i]},${colors[i]}55)"></div></div>`;}).join('');
+}
+
+function renderPlanner(){
+  const grid=document.getElementById('calGrid');
+  if(grid){const days=['','','','','','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'];const events=[5,8,12,15,19,22,27,30];grid.innerHTML=days.map(d=>{const hasEv=events.includes(parseInt(d));const isToday=d==='30';return`<div class="cal-cell ${!d?'other-month':''} ${isToday?'today':''} ${hasEv&&!isToday?'has-event':''}">${d}</div>`;}).join('');}
+  const tl=document.getElementById('todayTimeline');
+  if(tl){const items=[{time:'9:00',title:'Mathematics — Integration',desc:'Chapter 7: Integration by Parts',color:'var(--emerald)'},{time:'11:00',title:'Break + Revision',desc:"Review yesterday's flashcards",color:'var(--amber)'},{time:'12:00',title:'Physics — Optics Quiz',desc:'Chapter 9 mock test',color:'var(--blue)'},{time:'14:00',title:'Lunch Break',desc:'1 hour break',color:'var(--teal)'},{time:'15:00',title:'Chemistry Reading',desc:'Organic Chemistry Chapter 5',color:'var(--coral)'},{time:'17:00',title:'AI Tutor Session',desc:'Doubt clearing with EduAI',color:'var(--violet)'}];tl.innerHTML=items.map(it=>`<div class="timeline-item"><div style="display:flex;flex-direction:column;align-items:center"><div class="timeline-dot" style="background:${it.color}"></div><div style="width:2px;flex:1;background:var(--border);margin-top:4px;min-height:20px"></div></div><div style="flex:1;padding-bottom:.5rem"><div class="timeline-content"><h4>${it.title}</h4><p>${it.desc}</p></div></div><div class="timeline-time">${it.time}</div></div>`).join('');}
+  const wg=document.getElementById('weeklyGoals');
+  if(wg){const goals=[{label:'Mathematics',p:68,color:'var(--emerald)'},{label:'Physics',p:45,color:'var(--blue)'},{label:'Chemistry',p:82,color:'var(--teal)'},{label:'Total Hours',p:57,color:'var(--amber)'}];wg.innerHTML=goals.map(g=>`<div><div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span style="font-size:.82rem">${g.label}</span><span style="font-size:.8rem;color:var(--text2)">${g.p}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${g.p}%;background:${g.color}"></div></div></div>`).join('');}
+}
+
+function renderSyllabus(){
+  const grid=document.getElementById('syllabusGrid');
+  if(!grid)return;
+  const subjects=[{name:'Mathematics',emoji:'📐',color:'var(--emerald)',chapters:[{n:'Algebra',done:true},{n:'Trigonometry',done:true},{n:'Calculus',done:false},{n:'Probability',done:false},{n:'Matrices',done:true}],pct:60},{name:'Physics',emoji:'⚛️',color:'var(--blue)',chapters:[{n:'Mechanics',done:true},{n:'Thermodynamics',done:true},{n:'Optics',done:false},{n:'Electrostatics',done:false},{n:'Waves',done:true}],pct:60},{name:'Chemistry',emoji:'🧪',color:'var(--teal)',chapters:[{n:'Physical Chem',done:true},{n:'Inorganic Chem',done:true},{n:'Organic Chem',done:false},{n:'Electrochemistry',done:false}],pct:50},{name:'Biology',emoji:'🧬',color:'var(--amber)',chapters:[{n:'Cell Biology',done:true},{n:'Genetics',done:true},{n:'Evolution',done:true},{n:'Ecology',done:false},{n:'Physiology',done:false}],pct:60},{name:'Computer Science',emoji:'💻',color:'var(--violet)',chapters:[{n:'Data Structures',done:true},{n:'Algorithms',done:true},{n:'DBMS',done:true},{n:'Networks',done:true},{n:'OS',done:false}],pct:80},{name:'English',emoji:'📖',color:'var(--coral)',chapters:[{n:'Grammar',done:true},{n:'Literature',done:true},{n:'Writing',done:false},{n:'Reading',done:true}],pct:75}];
+  grid.innerHTML=subjects.map(s=>`<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div style="display:flex;align-items:center;gap:.65rem"><div style="width:34px;height:34px;border-radius:9px;background:${s.color}18;display:flex;align-items:center;justify-content:center;font-size:1rem">${s.emoji}</div><h3 style="margin:0;font-size:.93rem">${s.name}</h3></div><div style="font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:${s.color}">${s.pct}%</div></div><div class="progress-bar" style="margin-bottom:1rem"><div class="progress-fill" style="width:${s.pct}%;background:${s.color}"></div></div><div style="display:flex;flex-direction:column;gap:.4rem">${s.chapters.map(ch=>`<div style="display:flex;align-items:center;gap:.6rem"><div style="width:15px;height:15px;border-radius:4px;${ch.done?`background:${s.color}`:'border:2px solid var(--border2)'};display:flex;align-items:center;justify-content:center;font-size:.62rem;color:#050c0a;flex-shrink:0">${ch.done?'✓':''}</div><span style="font-size:.81rem;${ch.done?'opacity:.5;text-decoration:line-through':''}">${ch.n}</span></div>`).join('')}</div><div style="margin-top:1rem;display:flex;gap:.5rem"><button class="btn btn-ghost" style="font-size:.73rem;padding:.3rem .75rem;flex:1">+ Chapter</button><button class="btn btn-primary" style="font-size:.73rem;padding:.3rem .75rem;flex:1" onclick="showPage('chat')">🤖 AI Help</button></div></div>`).join('');
+}
+
+function renderRevision(){
+  const rs=document.getElementById('revSchedule');
+  if(rs){const items=[{subj:'Mathematics',topic:'Integration',date:'Today',color:'var(--emerald)'},{subj:'Physics',topic:'Optics',date:'Tomorrow',color:'var(--blue)'},{subj:'Chemistry',topic:'Organic Reactions',date:'Jun 1',color:'var(--teal)'},{subj:'Biology',topic:'Genetics',date:'Jun 2',color:'var(--amber)'},{subj:'Mathematics',topic:'Probability',date:'Jun 3',color:'var(--violet)'}];rs.innerHTML=items.map(it=>`<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem;background:var(--bg3);border-radius:10px"><div style="width:8px;height:8px;border-radius:50%;background:${it.color};flex-shrink:0"></div><div style="flex:1"><div style="font-size:.82rem;font-weight:600">${it.subj} — ${it.topic}</div></div><span style="font-size:.73rem;color:var(--text3)">${it.date}</span></div>`).join('');}
+}
+
+function renderAnalytics(){
+  setTimeout(()=>{
+    const wc=document.getElementById('weekChart');
+    if(wc){const data=[3.5,5,4,6,4.5,3,5.5];const max=Math.max(...data);const colors=['#10e682','#00d4aa','#f5a623','#10e682','#ff6b5b','#a78bfa','#38bdf8'];wc.innerHTML=data.map((v,i)=>{const h=Math.round((v/max)*100);return`<div class="bar-wrap" style="flex:1"><div class="chart-bar" style="height:${h}%;background:linear-gradient(180deg,${colors[i]},${colors[i]}55)"></div></div>`;}).join('');}
+    const dc=document.getElementById('donutChart'),dl=document.getElementById('donutLegend');
+    if(dc&&dl){const subjects=[{name:'Mathematics',pct:28,color:'#10e682'},{name:'Physics',pct:22,color:'#38bdf8'},{name:'Chemistry',pct:20,color:'#00d4aa'},{name:'Biology',pct:15,color:'#f5a623'},{name:'Others',pct:15,color:'#a78bfa'}];const cx=60,cy=60,r=45,circumference=2*Math.PI*r;let cumulative=0;const paths=subjects.map(s=>{const dasharray=(s.pct/100)*circumference;const offset=circumference-cumulative*(circumference/100);const el=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="14" stroke-dasharray="${dasharray.toFixed(2)} ${(circumference-dasharray).toFixed(2)}" stroke-dashoffset="${offset.toFixed(2)}" stroke-linecap="round"/>`;cumulative+=s.pct;return el;}).join('');dc.innerHTML=`<svg width="120" height="120" viewBox="0 0 120 120" style="transform:rotate(-90deg)">${paths}</svg>`;dl.innerHTML=subjects.map(s=>`<div style="display:flex;align-items:center;gap:.5rem"><div style="width:9px;height:9px;border-radius:50%;background:${s.color};flex-shrink:0"></div><span style="font-size:.77rem;flex:1">${s.name}</span><span style="font-size:.77rem;font-weight:600">${s.pct}%</span></div>`).join('');}
+    const hm=document.getElementById('heatMap');
+    if(hm){hm.innerHTML=Array.from({length:91},(_,i)=>{const r=Math.random();const cls=r>.8?'heat-4':r>.6?'heat-3':r>.35?'heat-2':r>.15?'heat-1':'heat-0';return`<div class="heat-cell ${cls}"></div>`;}).join('');}
+  },50);
+}
+
+function renderLeaderboard(){
+  const el=document.getElementById('leaderboard');
+  if(!el)return;
+  const leaders=[{name:'Arjun Mehta',xp:8420,rank:1},{name:'Sneha Singh',xp:7850,rank:2},{name:'Rohit Krishnan',xp:7200,rank:3},{name:'Priya Sharma ⭐',xp:4850,rank:47},{name:'Kavya Nair',xp:4600,rank:48},{name:'Vikram Rao',xp:4420,rank:49}];
+  const colors=['var(--amber)','#a0a0b0','#cd7f32'];
+  el.innerHTML=leaders.map((l,i)=>`<div class="leaderboard-item" ${l.name.includes('⭐')?'style="background:rgba(16,230,130,0.05);margin:0 -1.5rem;padding:.65rem 1.5rem;border-radius:8px"':''}><div class="rank-num ${l.rank<=3?'top':''}">${l.rank<=3?['🥇','🥈','🥉'][l.rank-1]:l.rank}</div><div class="avatar" style="width:29px;height:29px;background:rgba(16,230,130,0.1);color:var(--emerald);font-size:.65rem;font-family:'Clash Display',sans-serif">${l.name.replace(' ⭐','').split(' ').map(w=>w[0]).join('')}</div><div style="font-size:.82rem;flex:1">${l.name}</div><div style="font-size:.8rem;font-weight:600;color:var(--emerald)">${l.xp.toLocaleString()} XP</div></div>`).join('');
+}
+
+function setSubject(btn,subj){document.querySelectorAll('.subject-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentSubject=subj;document.getElementById('currentSubject').textContent=subj;newChat();setTimeout(()=>addAIMessage(`Hello! I'm ready to help you with <strong>${subj}</strong>. What would you like to learn or practice today?`),100);}
+function newChat(){chatHistory=[];const msgs=document.getElementById('chatMessages');msgs.innerHTML=`<div class="msg"><div class="msg-avatar" style="background:rgba(16,230,130,0.12)">🤖</div><div class="msg-bubble"><strong>Ready to help with ${currentSubject}! 👋</strong><br><br>Ask me anything — I can explain concepts, solve problems step-by-step, create notes or flashcards, and more.</div></div>`;}
+function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function sendQuick(text){document.getElementById('chatInput').value=text;sendMessage();}
+function addUserMessage(text){const msgs=document.getElementById('chatMessages');const div=document.createElement('div');div.className='msg user';div.innerHTML=`<div class="msg-avatar" style="background:rgba(245,166,35,0.12)">👤</div><div class="msg-bubble">${text}</div>`;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
+function addTypingIndicator(){const msgs=document.getElementById('chatMessages');const div=document.createElement('div');div.className='msg';div.id='typingMsg';div.innerHTML=`<div class="msg-avatar" style="background:rgba(16,230,130,0.12)">🤖</div><div class="msg-bubble"><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
+function removeTypingIndicator(){const t=document.getElementById('typingMsg');if(t)t.remove();}
+function addAIMessage(html){removeTypingIndicator();const msgs=document.getElementById('chatMessages');const div=document.createElement('div');div.className='msg';div.innerHTML=`<div class="msg-avatar" style="background:rgba(16,230,130,0.12)">🤖</div><div class="msg-bubble">${html}</div>`;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
+async function sendMessage(){
+  const input=document.getElementById('chatInput');const text=input.value.trim();if(!text)return;
+  input.value='';addUserMessage(text);addTypingIndicator();chatHistory.push({role:'user',content:text});
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`You are EduAI Tutor, an expert AI study assistant for ${currentSubject}. Help students with clear, step-by-step explanations. Format math properly. Keep responses educational and encouraging. For problem solving, number each step clearly.`,messages:chatHistory})});
+    const data=await res.json();
+    if(data.content&&data.content[0]){const reply=data.content[0].text;chatHistory.push({role:'assistant',content:reply});const formatted=reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/`(.*?)`/g,'<code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:.85em;font-family:monospace">$1</code>').replace(/\n/g,'<br>');addAIMessage(formatted);}
+    else addAIMessage('I apologize — there was an issue. Please try again.');
+  }catch(err){addAIMessage('⚠️ Unable to connect to AI service. Please check your connection.');}
+}
+function flipCard(){flashFlipped=!flashFlipped;document.getElementById('flashInner').classList.toggle('flipped',flashFlipped);}
+function nextCard(){flashFlipped=false;flashIdx=(flashIdx+1)%flashcards.length;const card=flashcards[flashIdx];const inner=document.getElementById('flashInner');inner.classList.remove('flipped');const front=inner.querySelector('.flash-front p:last-child');const back=inner.querySelector('.flash-back p:nth-child(2)');if(front)front.textContent=card.q;if(back)back.textContent=card.a;}
+function answerQuiz(btn,correct){const opts=document.querySelectorAll('#quizOptions button');opts.forEach(o=>o.style.pointerEvents='none');btn.style.background=correct?'rgba(16,230,130,0.15)':'rgba(255,107,91,0.15)';btn.style.borderColor=correct?'var(--emerald)':'var(--coral)';if(!correct){opts[1].style.background='rgba(16,230,130,0.15)';opts[1].style.borderColor='var(--emerald)';}setTimeout(()=>{document.getElementById('quizArea').innerHTML=`<div style="text-align:center;padding:1rem"><div style="font-size:2rem;margin-bottom:.5rem">${correct?'🎉':'💡'}</div><p style="font-size:.93rem;font-weight:600;margin-bottom:.5rem">${correct?'Correct! Well done!':'The answer is Newton (N)'}</p><p style="font-size:.8rem;color:var(--text2);margin-bottom:1rem">Force is measured in Newtons (N) = kg⋅m/s²</p><button class="btn btn-primary" style="font-size:.8rem" onclick="renderRevision()">Next Question →</button></div>`;},800);}
+showPage('landing');
+</script>
+</body>
+</html>
